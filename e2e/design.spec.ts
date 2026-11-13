@@ -20,7 +20,6 @@ test('design preview: ticking fills Collected, unticking restores it', async ({ 
 
   await collected.fill('2000')
   await expect(done).toBeChecked()
-  await expect(page.getByText('4 of 15 done')).toBeVisible()
   await collected.fill('575')
 
   // `pnpm design:shots` saves the screenshots that get committed

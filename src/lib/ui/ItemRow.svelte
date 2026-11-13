@@ -46,8 +46,7 @@
     <span>/ {count.format(needed)}</span>
   </label>
   <label class="tick">
-    <input type="checkbox" checked={done} onchange={toggle} />
-    <span>Done</span>
+    <input type="checkbox" checked={done} onchange={toggle} aria-label="{name}: done" />
   </label>
 </li>
 
@@ -67,8 +66,8 @@
     place-items: center;
     width: 28px;
     height: 28px;
-    border: 1px solid var(--line);
-    background: var(--bg);
+    border-radius: var(--radius);
+    background: var(--control);
     color: var(--muted);
     font-size: 13px;
     font-weight: 600;
@@ -95,8 +94,9 @@
   .progress input {
     width: 6.5em;
     height: 30px;
-    padding: 0 6px;
+    padding: 0 8px;
     border: 1px solid var(--line);
+    border-radius: var(--radius);
     background: var(--field);
     color: var(--text);
     font: inherit;
@@ -106,7 +106,7 @@
     width: 18px;
     height: 18px;
     margin: 0;
-    accent-color: var(--text);
+    accent-color: var(--muted);
   }
   .done .name {
     text-decoration: line-through;
@@ -155,9 +155,6 @@
       justify-content: flex-end;
       min-width: 44px;
       min-height: 44px;
-    }
-    .tick span {
-      display: none;
     }
     .tick input {
       width: 24px;

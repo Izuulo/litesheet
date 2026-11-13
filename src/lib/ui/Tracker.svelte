@@ -21,13 +21,10 @@
     onimport?: () => void
     onexport?: () => void
   } = $props()
-
-  const doneCount = $derived(items.filter((item) => item.collected >= item.needed).length)
 </script>
 
 <header>
   <h1>{name}</h1>
-  <p>{doneCount} of {items.length} done</p>
   <button type="button" onclick={onimport}>Import</button>
   <button type="button" onclick={onexport}>Export</button>
 </header>
@@ -58,33 +55,30 @@
   header {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding: 12px 16px;
-    border-bottom: 1px solid var(--line);
   }
   h1 {
-    margin: 0;
-    font-size: 20px;
-  }
-  p {
     margin: 0 auto 0 0;
-    color: var(--muted);
+    font-size: 20px;
+    font-weight: 600;
   }
   button {
     height: 36px;
     padding: 0 16px;
-    border: 1px solid var(--text);
-    background: var(--row);
+    border: 0;
+    border-radius: var(--radius);
+    background: var(--control);
     color: var(--text);
     font: inherit;
     font-weight: 600;
     cursor: pointer;
   }
   button:hover {
-    background: var(--field);
+    background: var(--line);
   }
   main {
-    --cols: 28px minmax(120px, 1fr) 80px 105px 150px 195px 70px; /* px, not em: the header row has a smaller font */
+    --cols: 28px minmax(120px, 1fr) 80px 105px 150px 195px 48px; /* px, not em: the header row has a smaller font */
   }
   .head {
     display: grid;
@@ -92,7 +86,8 @@
     gap: 12px;
     padding: 8px 16px;
     background: var(--head);
-    border-bottom: 1px solid var(--line);
+    border-block: 1px solid var(--line);
+    color: var(--muted);
     font-size: 13px;
     font-weight: 600;
   }
@@ -108,12 +103,6 @@
     .stacks,
     .head {
       display: none;
-    }
-    p {
-      display: none;
-    }
-    h1 {
-      margin-right: auto;
     }
   }
 </style>

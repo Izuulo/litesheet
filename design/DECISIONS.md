@@ -4,6 +4,10 @@ Date, what, why. Newest first.
 
 ## 2026-11-13
 
+- **Softer and more uniform.** One family of close greys, lighter lines, rounded controls, and the
+  Figtree font (self-hosted, so the app still works offline).
+- **No small text that is not needed.** The "3 of 15 done" count and the "Done" label beside each
+  checkbox are gone; the column header already says it.
 - **The list is a full-width table.** It spans the whole screen edge to edge, with a header band, and
   no centered column or outer margins.
 - **Plain and simple look.** Grey background, Import and Export buttons at the top, one row per
