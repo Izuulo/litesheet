@@ -13,7 +13,7 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
-    "design:shots": "echo 'design:shots is added in Phase B (PRD §11.2)' && exit 1"
+    "design:shots": "SHOTS=1 playwright test design"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
