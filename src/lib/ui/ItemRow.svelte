@@ -58,7 +58,7 @@
     align-items: center;
     gap: 12px;
     min-height: 44px;
-    padding: 0 12px;
+    padding: 0 16px;
     background: var(--row);
     border-bottom: 1px solid var(--line);
   }

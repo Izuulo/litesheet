@@ -4,6 +4,8 @@ Date, what, why. Newest first.
 
 ## 2026-11-13
 
+- **The list is a full-width table.** It spans the whole screen edge to edge, with a header band, and
+  no centered column or outer margins.
 - **Plain and simple look.** Grey background, Import and Export buttons at the top, one row per
   block. It does not need to be pretty; it needs to convey information. The owner turned down four
   more designed directions in favor of this.

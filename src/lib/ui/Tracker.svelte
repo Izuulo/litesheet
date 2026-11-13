@@ -84,18 +84,17 @@
     background: var(--field);
   }
   main {
-    --cols: 28px minmax(8em, 1fr) 5.5em 7em 10em 13em 4.5em;
-    max-width: 1100px;
-    margin: 16px auto;
-    padding: 0 16px;
+    --cols: 28px minmax(120px, 1fr) 80px 105px 150px 195px 70px; /* px, not em: the header row has a smaller font */
   }
   .head {
     display: grid;
     grid-template-columns: var(--cols);
     gap: 12px;
-    padding: 0 12px 6px;
-    color: var(--muted);
+    padding: 8px 16px;
+    background: var(--head);
+    border-bottom: 1px solid var(--line);
     font-size: 13px;
+    font-weight: 600;
   }
   .r {
     text-align: right;
@@ -104,13 +103,8 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    border: 1px solid var(--line);
-    border-bottom: 0;
   }
   @media (max-width: 700px) {
-    main {
-      padding: 0 8px;
-    }
     .stacks,
     .head {
       display: none;
