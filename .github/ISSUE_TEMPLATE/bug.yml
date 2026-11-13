@@ -1,0 +1,39 @@
+name: Bug report
+description: Something is wrong or broken
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: file
+    attributes:
+      label: Export file
+      description: Drag the Litematica export file (.txt / .csv / .json) or the Litesheet .xlsx here. Most bugs can't be reproduced without it.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Firefox 145 on Windows 11
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Litematica and Minecraft version
+      placeholder: Litematica 0.25.2, Minecraft 1.21.11
+    validations:
+      required: true
+  - type: input
+    id: language
+    attributes:
+      label: Game language
+      placeholder: English (US)
+    validations:
+      required: true
