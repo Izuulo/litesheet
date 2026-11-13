@@ -6,13 +6,15 @@
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | Owner       | Finn                                                                                                                                         |
 | Builder     | Claude Code                                                                                                                                  |
-| Status      | Draft v3, ready to build                                                                                                                     |
+| Status      | Draft v4. Phase A done, Phase B next                                                                                                         |
 | Date        | 2026-11-13                                                                                                                                   |
 | Form factor | Static web app (client-side only) with two outputs: an **in-browser tracker** and an **Excel (.xlsx) export**. Optional companion mod later. |
 
 **v2 changes:** Added the in-browser tracker as a core feature (check items off, type collected counts, multiple saved builds), with two-way sync to the Excel export. This replaces the Litematica Material Viewer, which is no longer available.
 
 **v3 changes:** Added two phases that come before any feature code: **Phase A: public repo setup** (§11.1) and **Phase B: design every screen on a design canvas and get approval** (§11.2).
+
+**v4 changes (after Phase A):** Brought the document in line with what was built and settled its internal contradictions. Repo is `izuulo/litesheet`, published as Izuulo with a GitHub noreply commit email. Node 26 LTS; pnpm installed with npm, since Corepack no longer ships with Node. Scaffolded in place, not in a subfolder. v1 reads the plain `.json` export only (raw-material JSON is P2). The config URL is P1. Added the "This is me" setting behind the "Assigned to me" filter, and the Checkbox column the Printable preset uses. Row key is item ID, else display name + stack size. Dark mode and the phone layout are built with the components from Phase B on, not at M7.
 
 ---
 
@@ -28,7 +30,7 @@
    - one export with a multiplier above 1 (header becomes `Total (xN)`)
    - one large build (200+ item types) and one tiny build
    - if possible, one exported with a non-English game language
-     Section 4 describes what we know about these formats from Litematica's source code. **Fixtures win over this document** wherever they disagree. Write down any differences you find in `docs/FORMATS.md`.
+     Sections 2.1 and 5 describe what we know about these formats from Litematica's source code. **Fixtures win over this document** wherever they disagree. Write down any differences you find in `docs/FORMATS.md`.
 2. Work test-first for the parsers and the unit math (section 6). Those are pure functions with exact expected outputs.
 3. Work in the order in section 11. Don't start a phase or milestone until the previous one meets its acceptance criteria.
    3b. One branch + pull request per phase/milestone, merged only when CI is green. Use conventional commit messages (`feat:`, `fix:`, `chore:`, `docs:`, `test:`).
@@ -182,7 +184,7 @@ Detect by content, not just extension:
 
 - Starts with `+---` and has `|` delimited rows → ASCII `.txt`
 - First data line parses as CSV with an `Item` header → `.csv`
-- Parses as JSON → `.json` (detect which variant: plain `material_list_*`, or `raw_material_list_simplified` / `_recipe_steps` / `_recipe_details`). v1 supports the plain one and **simplified**; others show "not supported yet".
+- Parses as JSON → `.json` (detect which variant: plain `material_list_*`, or `raw_material_list_simplified` / `_recipe_steps` / `_recipe_details`). v1 supports the plain one only; the `raw_material_list_*` variants show "not supported yet" (raw-material view is P2, §10).
 
 ### 5.2 Normalized model
 
@@ -213,7 +215,7 @@ type Build = {
   createdAt: string
   updatedAt: string
   list: MaterialList // latest applied export
-  progress: Record<RowKey, ItemProgress> // keyed by itemId, else displayName
+  progress: Record<RowKey, ItemProgress> // keyed by itemId, else displayName + stackSize (§13)
   removed: MaterialEntry[] // items dropped by a later export (kept with their progress)
   settings: ViewSettings // toggles from §8, shared by tracker + export
   team: string[]
@@ -299,22 +301,23 @@ Spreadsheet formulas must avoid `LET`, `LAMBDA`, and dynamic arrays (compatibili
 
 ### 7.1 Sheet: `Materials` (main tracker)
 
-| #   | Column                      | Default | Source / formula                                        | Notes                                                               |
-| --- | --------------------------- | ------- | ------------------------------------------------------- | ------------------------------------------------------------------- |
-| A   | Done                        | on      | `=IF(F2=0,"✓","")`                                      | Auto. Conditional format turns the whole row green.                 |
-| B   | Item                        | on      | export                                                  | Frozen column.                                                      |
-| C   | Needed                      | on      | export `Total` (or `Missing`, see toggle)               | Bold.                                                               |
-| D   | Collected                   | on      | **user input**, starts at 0                             | Light yellow fill = "type here". Data validation: whole number ≥ 0. |
-| E   | Stack size                  | hidden  | resolved                                                | Used by formulas. Hidden, not deleted.                              |
-| F   | Remaining                   | on      | `=MAX(0,C2-D2)`                                         |                                                                     |
-| G   | Remaining (SB / st / items) | on      | INT/MOD formula from §6, using E                        | E.g. `1 SB + 3 st + 4`                                              |
-| H   | Progress                    | on      | `=IF(C2=0,1,MIN(1,D2/C2))`                              | Percent format, data bar (Excel) with color-scale fallback          |
-| I   | Status                      | off     | `=IF(F2=0,"Done",IF(D2>0,"In progress","Not started"))` |                                                                     |
-| J   | Storage location            | off     | user input                                              | e.g. "Chest 4", "Shulker #2"                                        |
-| K   | Assigned to                 | off     | user input, dropdown from `Team` list                   | Team preset turns this on                                           |
-| L   | Notes                       | off     | user input                                              |                                                                     |
-| M   | Litematica Missing          | off     | export                                                  | Snapshot at export time                                             |
-| N   | Litematica Available        | off     | export                                                  | Snapshot at export time (inventory only)                            |
+| #   | Column                      | Default | Source / formula                                        | Notes                                                                  |
+| --- | --------------------------- | ------- | ------------------------------------------------------- | ---------------------------------------------------------------------- |
+| A   | Done                        | on      | `=IF(F2=0,"✓","")`                                      | Auto. Conditional format turns the whole row green.                    |
+| B   | Item                        | on      | export                                                  | Frozen column.                                                         |
+| C   | Needed                      | on      | export `Total` (or `Missing`, see toggle)               | Bold.                                                                  |
+| D   | Collected                   | on      | **user input**, starts at 0                             | Light yellow fill = "type here". Data validation: whole number ≥ 0.    |
+| E   | Stack size                  | hidden  | resolved                                                | Used by formulas. Hidden, not deleted.                                 |
+| F   | Remaining                   | on      | `=MAX(0,C2-D2)`                                         |                                                                        |
+| G   | Remaining (SB / st / items) | on      | INT/MOD formula from §6, using E                        | E.g. `1 SB + 3 st + 4`                                                 |
+| H   | Progress                    | on      | `=IF(C2=0,1,MIN(1,D2/C2))`                              | Percent format, data bar (Excel) with color-scale fallback             |
+| I   | Status                      | off     | `=IF(F2=0,"Done",IF(D2>0,"In progress","Not started"))` |                                                                        |
+| J   | Storage location            | off     | user input                                              | e.g. "Chest 4", "Shulker #2"                                           |
+| K   | Assigned to                 | off     | user input, dropdown from `Team` list                   | Team preset turns this on                                              |
+| L   | Notes                       | off     | user input                                              |                                                                        |
+| M   | Litematica Missing          | off     | export                                                  | Snapshot at export time                                                |
+| N   | Litematica Available        | off     | export                                                  | Snapshot at export time (inventory only)                               |
+| O   | Checkbox                    | off     | empty box, no formula                                   | Printable checklist preset only: a box to tick with a pen. Excel-only. |
 
 Behavior:
 
@@ -342,13 +345,13 @@ Behavior:
 
 ## 8. Customization toggles
 
-All toggles live in a side panel next to the live preview. **The same settings drive the browser tracker and the Excel export**, so what you see in the tracker is what you get in the file (Excel-only options like output format, theme, and print layout are marked as such). Settings save per build and can be shared as a URL (`?cfg=<base64 JSON>`).
+All toggles live in a side panel next to the live preview. **The same settings drive the browser tracker and the Excel export**, so what you see in the tracker is what you get in the file (Excel-only options like output format, theme, and print layout are marked as such). Settings save per build. Sharing them as a URL (`?cfg=<base64 JSON>`) is P1 (§10).
 
 **Presets** (one click, then tweak):
 
 - **Solo survival** (default): Done, Item, Needed, Collected, Remaining, SB/st, Progress
-- **Team build**: + Assigned to, Status, per-person summary; asks for team names
-- **Printable checklist**: Item, Needed, SB/st, empty checkbox column; portrait, fit to page width, no formulas, gridlines on
+- **Team build**: + Assigned to, Status, per-person summary; asks for team names and which one is you ("This is me", saved per browser, not in the build; it drives the "Assigned to me" filter)
+- **Printable checklist**: Checkbox (column O, in place of Done), Item, Needed, SB/st; portrait, fit to page width, no formulas, gridlines on
 - **Minimal**: Item, Needed, Collected, Remaining
 
 **Columns:** on/off for every column in §7.1, plus drag to reorder.
@@ -411,7 +414,7 @@ The main screen. It has to feel fast with 500+ rows and be usable with one hand 
 - Optional columns from §8 (Location, Assigned to, Notes) shown inline when enabled.
 - Done rows go green and drop to the bottom (toggle), or hide entirely with **Hide done**.
 
-**Controls:** search box (focus with `/`), filter chips (All / Remaining / In progress / Done / Unresolved / Assigned to me), sort (same options as §8), grouping (when categories exist).
+**Controls:** search box (focus with `/`), filter chips (All / Remaining / In progress / Done / Unresolved / Assigned to me, shown only when the team list is not empty and "This is me" is set), sort (same options as §8), grouping (when categories exist).
 
 **Keyboard:** `/` search, `↑/↓` move, `Space` toggle done, `S` +1 stack, `B` +1 shulker, `Ctrl+Z` undo (keep an undo stack of the last 50 changes, since a misclick on a big build is annoying).
 
@@ -483,20 +486,20 @@ Goal: an empty but fully wired public repo. CI runs, the site deploys, and the p
 **A2. Tooling check**
 
 - `gh auth status` (Finn logs in if needed: `gh auth login`)
-- Node: current LTS, pinned in `.nvmrc`. pnpm through Corepack (`corepack enable`), pinned in `package.json` → `"packageManager"`.
+- Node: current LTS (26), pinned in `.nvmrc` and used by CI. pnpm installed with `npm i -g pnpm` (Corepack no longer ships with Node), pinned in `package.json` → `"packageManager"`.
 
 **A3. Scaffold locally**
 
 ```bash
-pnpm create vite@latest litesheet --template svelte-ts
-cd litesheet
+# in the existing litesheet/ folder (scaffold in a temp folder and copy in, since the folder is not empty)
+pnpm create vite@latest <temp> --template svelte-ts
 git init -b main
 pnpm install
 ```
 
 - TypeScript `strict: true`.
 - Add dev tools: Vitest, Playwright (e2e + design screenshots), ESLint (flat config) + `eslint-plugin-svelte`, Prettier + `prettier-plugin-svelte`, `svelte-check`.
-- `package.json` scripts: `dev`, `build`, `preview`, `test`, `test:e2e`, `lint`, `format`, `check` (svelte-check + tsc), `design:shots` (see Phase B).
+- `package.json` scripts: `dev`, `build`, `preview`, `test`, `test:e2e`, `lint`, `format`, `check` (svelte-check + tsc), `design:shots` (a stub that fails until Phase B adds the real script).
 - Placeholder page that just says "Litesheet, coming soon".
 
 **A4. Repo files**
@@ -504,7 +507,7 @@ pnpm install
 | File                                                                       | Contents                                                                                                                                                                                                                                                |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `README.md`                                                                | One-line pitch, status ("in development"), screenshot placeholder, how to run locally, **"Not affiliated with Mojang, Microsoft, or Litematica"** disclaimer                                                                                            |
-| `LICENSE`                                                                  | MIT (we read Litematica's output files, we don't copy its code). Check minecraft-data's license allows bundling the generated item table, and credit it in the README.                                                                                  |
+| `LICENSE`                                                                  | MIT, copyright Izuulo (we read Litematica's output files, we don't copy its code). minecraft-data is MIT, so bundling the generated item table is fine; credit it in the README when it is added (M1).                                                  |
 | `CLAUDE.md`                                                                | Rules for Claude Code: read `docs/PRD.md` first; work order (§11); commands (`pnpm test`, `pnpm check`, `pnpm lint`); test-first for parsers/math; never bundle Mojang textures; keep it client-side only; update the design canvas whenever UI changes |
 | `docs/PRD.md`                                                              | This file                                                                                                                                                                                                                                               |
 | `docs/FORMATS.md`                                                          | Stub, filled in at M0                                                                                                                                                                                                                                   |
@@ -529,6 +532,8 @@ pnpm install
 - Site URL: `https://izuulo.github.io/litesheet/` (custom domain later if wanted).
 
 **A7. Create and push the public repo** (after Finn confirms the name)
+
+Public identity: commits use `Izuulo` and the account's GitHub noreply email (set in the repo-local git config before the first commit), and the LICENSE copyright holder is Izuulo. No real name or personal email in the repo.
 
 ```bash
 git add -A && git commit -m "chore: scaffold project"
@@ -669,7 +674,7 @@ Goal: every screen and every state from §9 laid out side by side on one zoomabl
 
 **M7: Ship**
 
-- CSV + Copy TSV outputs, sample file, "where's my file" helper, error states, dark mode, mobile layout for the tracker
+- CSV + Copy TSV outputs, sample file, "where's my file" helper, error states, final pass on dark mode and the phone layout (both are built with the components in Phase B and M4)
 - Deploy pipeline from Phase A goes live with the real app
 - README with real screenshots and a GIF; tag `v0.1.0` release
 - ✅ Lighthouse performance ≥ 90; works offline after first load
