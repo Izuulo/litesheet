@@ -29,4 +29,6 @@ Phase A (repo setup) → Phase B (design canvas, approved by Finn) → M0 to M7 
 - Every generated `.xlsx` must open without repair prompts in Excel, LibreOffice Calc and Google
   Sheets. Spreadsheet formulas avoid `LET`, `LAMBDA` and dynamic arrays.
 - Update the design canvas (`/design`) whenever UI changes.
+- Commit as `Izuulo` with the GitHub noreply email (repo-local git config). No real name or
+  personal email in commits, docs, issues or PRs.
 - GitHub repo is `izuulo/litesheet`; the site is served under `/litesheet/` (Vite `base`).
