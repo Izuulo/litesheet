@@ -46,7 +46,7 @@ version, a customizable Excel export, and update-in-place when the schematic cha
   2026-11-13).
 - Each row has a block icon slot. Where the icons come from is undecided (Mojang textures are
   ruled out by the PRD); a letter tile stands in for now.
-- Light and dark mode. Desktop first; the tracker must also work on a phone.
+- Dark only, no light mode (owner's decision, 2026-11-13). Desktop first; the tracker must also work on a phone.
 - Item statuses: not started, in progress, done, over-collected, unresolved (stack size unknown).
 
 ## Brand Commitments

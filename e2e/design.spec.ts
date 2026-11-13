@@ -24,13 +24,11 @@ test('design preview: ticking fills Collected, unticking restores it', async ({ 
 
   // `pnpm design:shots` saves the screenshots that get committed
   if (process.env.SHOTS) {
-    for (const [name, width, height, scheme] of [
-      ['tracker-light', 1280, 800, 'light'],
-      ['tracker-dark', 1280, 800, 'dark'],
-      ['tracker-phone', 390, 844, 'light'],
+    for (const [name, width, height] of [
+      ['tracker', 1280, 800],
+      ['tracker-phone', 390, 844],
     ] as const) {
       await page.setViewportSize({ width, height })
-      await page.emulateMedia({ colorScheme: scheme })
       await page.screenshot({ path: `design/screenshots/${name}.png` })
     }
   }

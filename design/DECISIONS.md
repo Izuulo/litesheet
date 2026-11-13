@@ -4,6 +4,7 @@ Date, what, why. Newest first.
 
 ## 2026-11-13
 
+- **Dark only.** There is no light mode; the app ignores the system setting. (The PRD asked for both.)
 - **Softer and more uniform.** One family of close greys, lighter lines, rounded controls, and the
   Figtree font (self-hosted, so the app still works offline).
 - **No small text that is not needed.** The "3 of 15 done" count and the "Done" label beside each
