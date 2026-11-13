@@ -13,10 +13,11 @@
     "lint": "eslint . && prettier --check .",
     "format": "prettier --write .",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json",
-    "design:shots": "echo 'design:shots is added in Phase B (PRD §11.2)' && exit 1"
+    "design:shots": "SHOTS=1 playwright test design"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@fontsource-variable/figtree": "^5.3.0",
     "@playwright/test": "^1.65.0",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@tsconfig/svelte": "^5.0.8",

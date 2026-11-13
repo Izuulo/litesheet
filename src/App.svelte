@@ -9,7 +9,7 @@
 
 <style>
   :global(html) {
-    color-scheme: light dark;
+    color-scheme: dark;
     font-family: system-ui, sans-serif;
   }
   main {
